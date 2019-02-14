@@ -21,7 +21,7 @@
         <developer>
             <id>01</id>
             <name>soyanga</name>
-            <email></email>
+            <email>soyanga@126.com</email>
             <roles>
                 <role>Create</role>
                 <role>Develope</role>
@@ -57,6 +57,15 @@
             <version>1.4.197</version>
             <scope>test</scope>
         </dependency>
+
+        <!--druid数据库的连接池（目的：提高数据库的访问效率）-->
+        <!-- https://mvnrepository.com/artifact/com.alibaba/druid -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>druid</artifactId>
+            <version>1.1.13</version>
+        </dependency>
+
 
     </dependencies>
     <!--配置构建的信息-->
