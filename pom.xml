@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.github.soyanga</groupId>
+    <artifactId>intelligent-everything</artifactId>
+    <version>1.0.0</version>
+
+    <!--打包格式，默认是jar-->
+    <packaging>jar</packaging>
+
+    <!--项目名称-->
+    <name>intelligent-everything</name>
+    <!--项目描述-->
+    <description></description>
+
+    <!--开发者信息-->
+    <developers>
+        <developer>
+            <id>01</id>
+            <name>soyanga</name>
+            <email></email>
+            <roles>
+                <role>Create</role>
+                <role>Develope</role>
+            </roles>
+        </developer>
+    </developers>
+
+
+    <!--基本属性信息，编码格式-->
+    <properties>
+        <encoding>UTF-8</encoding>
+        <java.version>1.8</java.version>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+    </properties>
+
+    <!--添加依赖-->
+    <dependencies>
+        <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
+        <!--lombok插件依赖的库-->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.6</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!--数据库以及驱动H2(JDBC API)-->
+        <!-- https://mvnrepository.com/artifact/com.h2database/h2 -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>1.4.197</version>
+            <scope>test</scope>
+        </dependency>
+
+    </dependencies>
+    <!--配置构建的信息-->
+    <build>
+        <!--编译插件-->
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.6.1</version>
+            </plugin>
+
+            <!--打包插件-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.1.0</version>
+
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <!--依赖的jar包添加到classpath-->
+                            <addClasspath>true</addClasspath>
+                            <!--设置可执行jar的主类-->
+                            <mainClass>com.github.soyanga.everything.cmd.IntelligentEverythingCmdApp</mainClass>
+                            <addExtensions>true</addExtensions>
+                            <!--指定可执行jar依赖包归档的目录前缀-->
+                            <classpathPrefix>lib</classpathPrefix>
+                        </manifest>
+                    </archive>
+                </configuration>
+
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
