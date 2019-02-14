@@ -44,7 +44,8 @@ public class DataSourceFactory {
                     //采用H2嵌入式数据库，数据库以本地文件的方式存储，只需要提供url接口
                     //获取当前工作路径
                     String workDir = System.getProperty("user.dir");
-                    dataSource.setUrl("jdbc:h2" + workDir + File.separator + "intelligent_everything");
+                    dataSource.setUrl("jdbc:h2:" + workDir + File.separator + "intelligent_everything");
+                    dataSource.setTestWhileIdle(false);
                 }
             }
         }
