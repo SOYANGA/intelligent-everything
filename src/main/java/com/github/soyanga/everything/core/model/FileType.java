@@ -12,6 +12,9 @@ import java.util.Set;
  * @Version 1.0
  */
 public enum FileType {
+    /**
+     * 对应了文件的图片，文档，可执行，压缩，其他文件类型
+     */
     IMG("png", "jpeg", "jpe", "gif"),
     DOC("ppt", "pptx", "doc", "docx", "pdf"),
     BIN("exe", "sh", "jar", "msi"),
@@ -44,7 +47,19 @@ public enum FileType {
         return FileType.OTHER;
     }
 
-    public static void main(String[] args) {
-        System.out.println(FileType.lookup("exe"));
+    /**
+     * 根据文件类型名(String) 获取文件类型对象
+     *
+     * @param name 数据库中对用文件类型
+     * @return thing.filetype -java抽象的文件类(Thing)对应的文件类型
+     */
+    public static FileType lookupByName(String name) {
+        for (FileType filetype : FileType.values()) {
+            if (filetype.name().equals(name)) {
+                return filetype;
+            }
+        }
+        return FileType.OTHER;
     }
+
 }
