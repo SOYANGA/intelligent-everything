@@ -37,10 +37,8 @@ public final class FileConvertThing {
      * @return 文件深度
      */
     private static int computeFileDepth(File file) {
-        int depth = 0;
         String[] segments = file.getAbsolutePath().split("\\\\");
-        depth = segments.length;
-        return depth;
+        return segments.length;
     }
 
     /**

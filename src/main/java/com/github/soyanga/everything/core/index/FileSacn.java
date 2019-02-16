@@ -1,11 +1,7 @@
 package com.github.soyanga.everything.core.index;
 
-import com.github.soyanga.everything.core.dao.DataSourceFactory;
-import com.github.soyanga.everything.core.dao.impl.FileIndexDaoImpl;
-import com.github.soyanga.everything.core.index.impl.FileSacnImpl;
 import com.github.soyanga.everything.core.interceptor.FileInterceptor;
-import com.github.soyanga.everything.core.interceptor.impl.FileIndexInterceptor;
-import com.github.soyanga.everything.core.interceptor.impl.FilePrintInterceptor;
+
 
 /**
  * @program: intelligent-everything
@@ -30,12 +26,4 @@ public interface FileSacn {
      */
     void interceptor(FileInterceptor interceptor);
 
-//    public static void main(String[] args) {
-//        FileSacnImpl sacn = new FileSacnImpl();
-//        FileInterceptor filePrintInterceptor = new FilePrintInterceptor();
-//        FileInterceptor fileIndexInterceptor = new FileIndexInterceptor(new FileIndexDaoImpl(DataSourceFactory.dataSource()));
-//        sacn.interceptor(filePrintInterceptor);
-//        sacn.interceptor(fileIndexInterceptor);
-//        sacn.index("D:\\图片");
-//    }
 }

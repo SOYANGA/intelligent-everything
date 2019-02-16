@@ -21,6 +21,7 @@ import java.util.List;
  * @Version 1.0
  */
 public class FileIndexDaoImpl implements FileIndexDao {
+
     /**
      * final修饰的元素有3种初始化方式 直接赋值，构造方法，构造快
      */
@@ -76,8 +77,8 @@ public class FileIndexDaoImpl implements FileIndexDao {
      * 创建连接->创建命令->准备sql语句(从条件中取出condition的要查询的属性)
      * ->执行sql语句->结果返回->处理结果->包装成Things
      *
-     * @param condition
-     * @return
+     * @param condition 检索的条件
+     * @return 返回Thing文件类型(数据库结果集抽象成Thing)
      */
     @Override
     public List<Thing> search(Condition condition) {
@@ -148,6 +149,27 @@ public class FileIndexDaoImpl implements FileIndexDao {
         return things;
     }
 
+
+    @Override
+    public void delete(Thing thing) {
+        Connection connection = null;
+        PreparedStatement statement = null;
+        try {
+            //1.获取数据库连接
+            connection = dataSource.getConnection();
+            //2.准备SQL语句
+            String sql = "delete from file_index where path like '" + thing.getPath() + "%'";
+            //3.准备命令
+            statement = connection.prepareStatement(sql);
+            //设置参数 1， 2， 3，4
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            releaseResource(null, statement, connection);
+        }
+    }
+
     /**
      * 解决内部大量代码重复问题：重构
      *
@@ -180,23 +202,4 @@ public class FileIndexDaoImpl implements FileIndexDao {
         }
     }
 
-//    public static void main(String[] args) {
-//        FileIndexDao fileIndexDao = new FileIndexDaoImpl(DataSourceFactory.dataSource());
-//        Thing thing = new Thing();
-//        thing.setName("哈哈");
-//        thing.setPath("D:\\a\\test\\哈哈2.ppt");
-//        thing.setDepth(3);
-//        thing.setFiletype(FileType.DOC);
-////        fileIndexDao.insert(thing);
-//        Condition condition = new Condition();
-//        condition.setName("哈哈");
-//        condition.setFileType("DOC");
-//        condition.setOderByAsc(true);
-//        condition.setLimit(15);
-//
-//        List<Thing> things = fileIndexDao.search(condition);
-//        for (Thing t : things) {
-//            System.out.println(t);
-//        }
-//    }
 }

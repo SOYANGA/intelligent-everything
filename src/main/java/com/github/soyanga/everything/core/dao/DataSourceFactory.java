@@ -1,14 +1,13 @@
 package com.github.soyanga.everything.core.dao;
 
 import com.alibaba.druid.pool.DruidDataSource;
+import com.github.soyanga.everything.config.IntelligentEverythingConfig;
 
 import javax.sql.DataSource;
 import java.io.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.Scanner;
 
 /**
  * @program: intelligent-everything
@@ -50,20 +49,19 @@ public class DataSourceFactory {
                     //Jdbc规范中关于MySQL
                     //jdbc:mysql://ip:port/databaseName
 
-                    //获取当前工作路径
-                    String workDir = System.getProperty("user.dir");
                     //Jdbc规范中关于H2 jdbc:h2:filename ->存储到本地文件
 
                     //Jdbc规范中关于H2 jdbc:h2:~/filepath ->存储到当前用户的home目录
 
                     //jdbc规范中H2 jdbc:h2://ip:port/databaseName  ->存储到H2服务器
-                    dataSource.setUrl("jdbc:h2:" + workDir + File.separator + "intelligent_everything");
+                    dataSource.setUrl("jdbc:h2:" + IntelligentEverythingConfig.getInstance().getH2IndexPath());
                     dataSource.setTestWhileIdle(false);
                 }
             }
         }
         return dataSource;
     }
+
 
     /**
      * 初始化数据脚本
@@ -129,4 +127,6 @@ public class DataSourceFactory {
 //               因为我们操作的sql变量在静态方法内（属于线程私有属性）->方法栈中
 //               线程私有内存区域不会涉及多线程安全性问题，采用StringBuffer反而会让性能降低
 //
+
+
 }

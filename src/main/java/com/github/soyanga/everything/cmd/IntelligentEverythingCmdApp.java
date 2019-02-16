@@ -2,7 +2,9 @@ package com.github.soyanga.everything.cmd;
 
 import com.github.soyanga.everything.core.IntelligentEverythingManager;
 import com.github.soyanga.everything.core.model.Condition;
+import com.github.soyanga.everything.core.model.Thing;
 
+import java.util.List;
 import java.util.Scanner;
 
 /**
@@ -22,6 +24,10 @@ public class IntelligentEverythingCmdApp {
         welcome();
         //2.创建统一调度器
         IntelligentEverythingManager manager = IntelligentEverythingManager.getInstance();
+
+        //启用后台清理线程
+        manager.startBackgroundClearThread();
+
         //3.交互式
         interactive(manager);
         //2.执行交互，实现help命令，添加最外层循环直到输入quit才正式，退出并打印一句话
@@ -76,22 +82,16 @@ public class IntelligentEverythingCmdApp {
 
     private static void index(IntelligentEverythingManager manager) {
         //统一调度器器中的buildIndex 构建索引
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                manager.buildIndex();
-            }
-        }).start();
-
-
+        new Thread(manager::buildIndex).start();
     }
 
     private static void search(IntelligentEverythingManager manager, Condition condition) {
-        //TODO
-        System.out.println("检索功能");
         //统一调度器中的search
         //name fileType limit orderByAsc
-        manager.search(condition);
+        List<Thing> thingList = manager.search(condition);
+        for (Thing thing : thingList) {
+            System.out.println(thing.getPath());
+        }
     }
 
 

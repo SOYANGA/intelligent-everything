@@ -23,11 +23,19 @@ public interface FileIndexDao {
     void insert(Thing thing);
 
     /**
+     * 删除数据Thing
+     *
+     * @param thing 要删除的数据
+     */
+    void delete(Thing thing);
+
+    /**
      * 检索数据
      *
      * @param connection 检索条件
      * @return 检索的结果
      */
     List<Thing> search(Condition connection);
+
 
 }

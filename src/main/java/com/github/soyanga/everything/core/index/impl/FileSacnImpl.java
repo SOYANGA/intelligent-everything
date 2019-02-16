@@ -31,11 +31,11 @@ public class FileSacnImpl implements FileSacn {
                 return;
             }
         } else {
-            if (config.getExcludepath().contains(file.getParent())) {
+            if (config.getExcludepath().contains(path)) {
                 return;
             } else {
                 File[] files = file.listFiles();
-                if (file != null) {
+                if (files != null) {
                     for (File f : files) {
                         index(f.getAbsolutePath());
                     }

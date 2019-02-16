@@ -3,6 +3,7 @@ package com.github.soyanga.everything.config;
 
 import lombok.Getter;
 
+import java.io.File;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
@@ -11,7 +12,7 @@ import java.util.Set;
 
 /**
  * @program: intelligent-everything
- * @Description:
+ * @Description: 配置文件
  * @Author: SOYANGA
  * @Create: 2019-02-15 11:32
  * @Version 1.0
@@ -33,7 +34,15 @@ public class IntelligentEverythingConfig {
      */
     private Set<String> excludepath = new HashSet<>();
 
+
     //TODO 可配置的参数会在这里体现
+
+
+    /**
+     * H2数据库文件路径
+     */
+    private String h2IndexPath = System.getProperty("user.dir") + File.separator + "intelligent_everything";
+
 
     private IntelligentEverythingConfig() {
 
@@ -82,22 +91,22 @@ public class IntelligentEverythingConfig {
         }
     }
 
-
-    public static void main(String[] args) {
-//        FileSystem fileSystem = FileSystems.getDefault();
-//        Iterable<Path> iterator = fileSystem.getRootDirectories();
-//        iterator.forEach(new Consumer<Path>() {
-//            @Override
-//            public void accept(Path path) {
-//                System.out.println(path);
-//            }
-//        });
-//        System.out.println(System.getProperty("os.name"));
-        IntelligentEverythingConfig config = IntelligentEverythingConfig.getInstance();
-        System.out.println(config.getIncludePath());
-        System.out.println(config.getExcludepath());
-//        System.out.println(config);
-    }
+//
+//    public static void main(String[] args) {
+////        FileSystem fileSystem = FileSystems.getDefault();
+////        Iterable<Path> iterator = fileSystem.getRootDirectories();
+////        iterator.forEach(new Consumer<Path>() {
+////            @Override
+////            public void accept(Path path) {
+////                System.out.println(path);
+////            }
+////        });
+////        System.out.println(System.getProperty("os.name"));
+//        IntelligentEverythingConfig config = IntelligentEverythingConfig.getInstance();
+//        System.out.println(config.getIncludePath());
+//        System.out.println(config.getExcludepath());
+////        System.out.println(config);
+//    }
 
 
 }

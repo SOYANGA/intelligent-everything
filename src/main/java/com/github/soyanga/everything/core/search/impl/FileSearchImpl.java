@@ -5,6 +5,7 @@ import com.github.soyanga.everything.core.model.Condition;
 import com.github.soyanga.everything.core.model.Thing;
 import com.github.soyanga.everything.core.search.FileSearch;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -30,6 +31,9 @@ public class FileSearchImpl implements FileSearch {
 
     @Override
     public List<Thing> search(Condition condition) {
+        if (condition == null) {
+            return new ArrayList<>();
+        }
         return fileIndexDao.search(condition);
     }
 }
