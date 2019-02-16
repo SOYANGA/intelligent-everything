@@ -27,6 +27,5 @@ public class FileIndexInterceptor implements FileInterceptor {
         Thing thing = FileConvertThing.convert(file);
         System.out.println("Thing ==>" + thing);
         fileIndexDao.insert(thing);
-
     }
 }

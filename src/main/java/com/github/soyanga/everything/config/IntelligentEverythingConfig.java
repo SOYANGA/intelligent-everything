@@ -33,6 +33,8 @@ public class IntelligentEverythingConfig {
      */
     private Set<String> excludepath = new HashSet<>();
 
+    //TODO 可配置的参数会在这里体现
+
     private IntelligentEverythingConfig() {
 
     }
@@ -42,38 +44,44 @@ public class IntelligentEverythingConfig {
             synchronized (IntelligentEverythingConfig.class) {
                 if (config == null) {
                     config = new IntelligentEverythingConfig();
-                    //1.获取文件系统
-                    FileSystem fileSystem = FileSystems.getDefault();
-
-                    //2.添加遍历目录
-                    Iterable<Path> iterator = fileSystem.getRootDirectories();
-                    iterator.forEach(path -> config.getIncludePath().add(path.toString()));
-
-                    //3.排除的目录
-                    //windows :C:\windows
-                    //         C:\Program Files
-                    //          C:\Program Files (x86)
-                    //          C:\ProgramData
-                    //linux: /temp  /etc
-
-                    //3.1获取当前操作系统名称
-                    String osName = System.getProperty("os.name");
-                    //添加排除目录
-                    if (osName.startsWith("Windows")) {
-                        config.getExcludepath().add("C:\\windows");
-                        config.getExcludepath().add("C:\\Program Files");
-                        config.getExcludepath().add("C:\\Program Files (x86)");
-                        config.getExcludepath().add("C:\\ProgramData");
-                    } else {
-                        config.getExcludepath().add("/temp");
-                        config.getExcludepath().add("/etc");
-                        config.getExcludepath().add("/root");
-                    }
+                    config.initDefaultPathsConfig();
                 }
             }
         }
         return config;
     }
+
+
+    private void initDefaultPathsConfig() {
+        //1.获取文件系统
+        FileSystem fileSystem = FileSystems.getDefault();
+
+        //2.添加遍历目录
+        Iterable<Path> iterator = fileSystem.getRootDirectories();
+        iterator.forEach(path -> config.getIncludePath().add(path.toString()));
+
+        //3.排除的目录
+        //windows :C:\windows
+        //         C:\Program Files
+        //          C:\Program Files (x86)
+        //          C:\ProgramData
+        //linux: /temp  /etc
+
+        //3.1获取当前操作系统名称
+        String osName = System.getProperty("os.name");
+        //添加排除目录
+        if (osName.startsWith("Windows")) {
+            config.getExcludepath().add("C:\\windows");
+            config.getExcludepath().add("C:\\Program Files");
+            config.getExcludepath().add("C:\\Program Files (x86)");
+            config.getExcludepath().add("C:\\ProgramData");
+        } else {
+            config.getExcludepath().add("/temp");
+            config.getExcludepath().add("/etc");
+            config.getExcludepath().add("/root");
+        }
+    }
+
 
     public static void main(String[] args) {
 //        FileSystem fileSystem = FileSystems.getDefault();

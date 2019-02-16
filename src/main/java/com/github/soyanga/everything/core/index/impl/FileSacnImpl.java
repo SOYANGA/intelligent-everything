@@ -1,12 +1,9 @@
 package com.github.soyanga.everything.core.index.impl;
 
 import com.github.soyanga.everything.config.IntelligentEverythingConfig;
-import com.github.soyanga.everything.core.dao.DataSourceFactory;
-import com.github.soyanga.everything.core.dao.impl.FileIndexDaoImpl;
 import com.github.soyanga.everything.core.index.FileSacn;
 import com.github.soyanga.everything.core.interceptor.FileInterceptor;
-import com.github.soyanga.everything.core.interceptor.impl.FileIndexInterceptor;
-import com.github.soyanga.everything.core.interceptor.impl.FilePrintInterceptor;
+
 
 import java.io.File;
 import java.util.LinkedList;

@@ -65,7 +65,6 @@ public class DataSourceFactory {
         return dataSource;
     }
 
-
     /**
      * 初始化数据脚本
      * 通过数据库连接执行SQL
@@ -130,9 +129,4 @@ public class DataSourceFactory {
 //               因为我们操作的sql变量在静态方法内（属于线程私有属性）->方法栈中
 //               线程私有内存区域不会涉及多线程安全性问题，采用StringBuffer反而会让性能降低
 //
-
-    public static void main(String[] args) {
-        DataSourceFactory.initDataSource();
-    }
-
 }

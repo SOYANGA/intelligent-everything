@@ -40,6 +40,7 @@ public class FileIndexDaoImpl implements FileIndexDao {
     /**
      * 数据库处理逻辑
      * 创建连接->创建命令->准备sql语句->执行sql语句-> //结果返回->处理结果->包装成Things
+     *
      * @param thing 插入的数据
      */
     @Override
@@ -74,6 +75,7 @@ public class FileIndexDaoImpl implements FileIndexDao {
      * 数据库处理逻辑
      * 创建连接->创建命令->准备sql语句(从条件中取出condition的要查询的属性)
      * ->执行sql语句->结果返回->处理结果->包装成Things
+     *
      * @param condition
      * @return
      */
@@ -109,12 +111,16 @@ public class FileIndexDaoImpl implements FileIndexDao {
                                 .toUpperCase()).append("' ");
             }
             //order by必选的
-            sqlBuilder.append(" order by depth ")
-                    .append(condition.getOderByAsc() ? "asc" : "desc");
-            //limit offset
-            sqlBuilder.append(" limit ")
-                    .append(condition.getLimit())
-                    .append(" offset 0 ");
+            if (condition.getOderByAsc() != null) {
+                sqlBuilder.append(" order by depth ")
+                        .append(condition.getOderByAsc() ? "asc" : "desc");
+            }
+            if (condition.getLimit() != null) {
+                //limit offset
+                sqlBuilder.append(" limit ")
+                        .append(condition.getLimit())
+                        .append(" offset 0 ");
+            }
             //3.准备命令
             System.out.println(sqlBuilder.toString());
             statement = connection.prepareStatement(sqlBuilder.toString());
@@ -132,7 +138,7 @@ public class FileIndexDaoImpl implements FileIndexDao {
                 thing.setFiletype(FileType.lookupByName(fileType));
                 things.add(thing);
             }
-            statement.executeUpdate();
+            statement.executeQuery();
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {

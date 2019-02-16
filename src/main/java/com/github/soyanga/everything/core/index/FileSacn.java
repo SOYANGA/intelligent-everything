@@ -30,12 +30,12 @@ public interface FileSacn {
      */
     void interceptor(FileInterceptor interceptor);
 
-    public static void main(String[] args) {
-        FileSacnImpl sacn = new FileSacnImpl();
-        FileInterceptor filePrintInterceptor = new FilePrintInterceptor();
-        FileInterceptor fileIndexInterceptor = new FileIndexInterceptor(new FileIndexDaoImpl(DataSourceFactory.dataSource()));
-        sacn.interceptor(filePrintInterceptor);
-        sacn.interceptor(fileIndexInterceptor);
-        sacn.index("D:\\图片");
-    }
+//    public static void main(String[] args) {
+//        FileSacnImpl sacn = new FileSacnImpl();
+//        FileInterceptor filePrintInterceptor = new FilePrintInterceptor();
+//        FileInterceptor fileIndexInterceptor = new FileIndexInterceptor(new FileIndexDaoImpl(DataSourceFactory.dataSource()));
+//        sacn.interceptor(filePrintInterceptor);
+//        sacn.interceptor(fileIndexInterceptor);
+//        sacn.index("D:\\图片");
+//    }
 }
