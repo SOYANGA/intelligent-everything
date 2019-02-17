@@ -55,7 +55,14 @@ public class DataSourceFactory {
 
                     //jdbc规范中H2 jdbc:h2://ip:port/databaseName  ->存储到H2服务器
                     dataSource.setUrl("jdbc:h2:" + IntelligentEverythingConfig.getInstance().getH2IndexPath());
-                    dataSource.setTestWhileIdle(false);
+
+                    //Duirp数据库的连接池的可配置参数
+
+                    //判断连接数据库受否开启超时断开连接
+                    //第二种
+//                    dataSource.setTestWhileIdle(false);
+                    //第一种
+                    dataSource.setValidationQuery("select now()");
                 }
             }
         }

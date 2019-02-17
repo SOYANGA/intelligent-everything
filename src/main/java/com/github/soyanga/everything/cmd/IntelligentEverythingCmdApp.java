@@ -1,8 +1,10 @@
 package com.github.soyanga.everything.cmd;
 
+import com.github.soyanga.everything.config.IntelligentEverythingConfig;
 import com.github.soyanga.everything.core.IntelligentEverythingManager;
 import com.github.soyanga.everything.core.model.Condition;
 import com.github.soyanga.everything.core.model.Thing;
+import lombok.ToString;
 
 import java.util.List;
 import java.util.Scanner;
@@ -20,6 +22,9 @@ public class IntelligentEverythingCmdApp {
 
     public static void main(String[] args) {
         System.out.println("这是intelligentEverything应用程序的命令行交互程序");
+        //通过用户参数进行解析
+        parseParams(args);
+        System.out.println(IntelligentEverythingConfig.getInstance());
         //1.欢迎
         welcome();
         //2.创建统一调度器
@@ -33,6 +38,7 @@ public class IntelligentEverythingCmdApp {
         //2.执行交互，实现help命令，添加最外层循环直到输入quit才正式，退出并打印一句话
     }
 
+
     private static void interactive(IntelligentEverythingManager manager) {
         //2.执行交互，实现help命令，添加最外层循环直到输入quit才正式，退出并打印一句话
         while (true) {
@@ -43,7 +49,7 @@ public class IntelligentEverythingCmdApp {
                 //search name [file_type]
                 String[] values = input.split(" ");
                 if (values.length >= 2) {
-                    if (!values[0].equals("search")) {
+                    if (!"search".equals(values[0])) {
                         help();
                         continue;
                     }
@@ -55,6 +61,7 @@ public class IntelligentEverythingCmdApp {
                         String fileType = values[2];
                         condition.setFileType(fileType.toUpperCase());
                     }
+                    //limit orderBy 配置类
                     search(manager, condition);
                     continue;
                 } else {
@@ -69,6 +76,11 @@ public class IntelligentEverythingCmdApp {
                     break;
                 case "index":
                     index(manager);
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                     break;
                 case "quit":
                     quit();
@@ -86,11 +98,71 @@ public class IntelligentEverythingCmdApp {
     }
 
     private static void search(IntelligentEverythingManager manager, Condition condition) {
-        //统一调度器中的search
+        //统一调度器中的search 的Condition条件
         //name fileType limit orderByAsc
+        condition.setLimit(IntelligentEverythingConfig.getInstance().getMaxReturn());
+        condition.setOderByAsc(IntelligentEverythingConfig.getInstance().getDepthOrderAsc());
+
         List<Thing> thingList = manager.search(condition);
         for (Thing thing : thingList) {
             System.out.println(thing.getPath());
+        }
+    }
+
+
+    private static void parseParams(String[] args) {
+
+        //为了避免文件中有空格，重新拼接字符串
+        StringBuilder paramStrbuilder = new StringBuilder();
+        for (String s : args) {
+            paramStrbuilder.append(" ").append(s);
+        }
+        //重新拼接的字符串
+        String paramStr = paramStrbuilder.toString().trim();
+        int handindex = paramStr.indexOf("=");
+        //如果用户指定的参数不对，不再做解析直接使用默认值
+        if (handindex != -1 && handindex < paramStr.length()) {
+            //操作参数
+            String paramHand = paramStr.substring(0, handindex + 1);
+            //赋值参数
+            String argsHandle = paramStr.substring(handindex + 1);
+            //赋值参数拆分成数组
+            //一个一个字符串解析
+            String[] paramList = argsHandle.split(";");
+
+            IntelligentEverythingConfig config = IntelligentEverythingConfig.getInstance();
+
+            String maxReturnParam = "--maxReturn=";
+            if (maxReturnParam.equals(paramHand)) {
+                config.setMaxReturn(Integer.parseInt(paramList[0]));
+            }
+
+            String depthOrderAscParam = "--depthOrderByAsc=";
+            if (depthOrderAscParam.equals(paramHand)) {
+                config.setDepthOrderAsc(Boolean.parseBoolean(paramList[0]));
+            }
+            String includePathParam = "--includePath=";
+            if (includePathParam.equals(paramHand)) {
+                if (paramList.length > 0) {
+                    config.getIncludePath().clear();
+                }
+                for (String path : paramList) {
+                    if (path != null) {
+                        config.getIncludePath().add(path);
+                    }
+                }
+            }
+            String excludePathParam = "--excludePath=";
+            if (excludePathParam.startsWith(paramHand)) {
+                if (paramList.length > 0) {
+                    config.getExcludepath().clear();
+                }
+                for (String path : paramList) {
+                    if (path != null) {
+                        config.getExcludepath().add(path);
+                    }
+                }
+            }
         }
     }
 

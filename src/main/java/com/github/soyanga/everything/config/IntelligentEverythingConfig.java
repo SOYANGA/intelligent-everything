@@ -1,7 +1,10 @@
 package com.github.soyanga.everything.config;
 
 
+import lombok.Data;
 import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 import java.io.File;
 import java.nio.file.FileSystem;
@@ -18,6 +21,7 @@ import java.util.Set;
  * @Version 1.0
  */
 @Getter
+@ToString
 public class IntelligentEverythingConfig {
 
 
@@ -36,7 +40,18 @@ public class IntelligentEverythingConfig {
 
 
     //TODO 可配置的参数会在这里体现
+    /**
+     * 检索最大的返回值
+     */
+    @Setter
+    private Integer maxReturn = 30;
 
+    /**
+     * 深度排序的规则，默认是升序
+     * oder by depth asc limit 30 offese 0;
+     */
+    @Setter
+    private Boolean depthOrderAsc = true;
 
     /**
      * H2数据库文件路径

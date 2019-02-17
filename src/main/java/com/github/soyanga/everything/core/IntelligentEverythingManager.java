@@ -60,8 +60,10 @@ public class IntelligentEverythingManager {
     public void initComponent() {
         //准备输数据源对象
         DataSource dataSource = DataSourceFactory.dataSource();
-        //检查数据库
-        checkDatabase();
+
+        //初始化并重新索引数据库
+        initOrResetDatabase();
+
         //数据库层得准备工作
         FileIndexDao fileIndexDao = new FileIndexDaoImpl(dataSource);
         //业务层的对象
@@ -76,23 +78,10 @@ public class IntelligentEverythingManager {
     }
 
 
-    /**
-     * 检查数据库
-     */
-    private void checkDatabase() {
-        String fileName = IntelligentEverythingConfig.getInstance().getH2IndexPath() + ".mv.db";
-        System.out.println(fileName);
-        File dbFile = new File(fileName);
-        //初始化数据库
-        if (!dbFile.exists()) {
-            DataSourceFactory.initDataSource();
-        }
-//        }else{
-//            if(!dbFile.isFile()){
-//                DataSourceFactory.initDataSource();
-//            }
-//        }
+    private void initOrResetDatabase() {
+        DataSourceFactory.initDataSource();
     }
+
 
     /**
      * Manager单例对象得获取
@@ -133,8 +122,11 @@ public class IntelligentEverythingManager {
 
     /**
      * 索引
+     * 当重新执行index的时候会删除原有的表重新进行新的创建表
      */
     public void buildIndex() {
+        //重新构建表
+        initOrResetDatabase();
         //目录
         Set<String> directories = IntelligentEverythingConfig.getInstance().getIncludePath();
         if (this.executorService == null) {
@@ -153,6 +145,7 @@ public class IntelligentEverythingManager {
         }
         //为了能够让索引完成后再让当前线程进行打印索引建立完成使用CountDownLatch
         final CountDownLatch countDownLatch = new CountDownLatch(directories.size());
+
         System.out.println("Build index strat,please wait a moment...");
         for (String path : directories) {
             //线程池提交
