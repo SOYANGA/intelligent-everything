@@ -40,7 +40,6 @@ public class ThingClearInterceptor implements ThingInterceptor, Runnable {
             if (thing != null) {
                 fileIndexDao.delete(thing);
             }
-
             //1.优化 批量删除,把delete升级为批量删除
             //List<Thing> thingList = new ArrayList<>();
             try {

@@ -1,6 +1,7 @@
 package com.github.soyanga.everything.core;
 
 import com.github.soyanga.everything.config.IntelligentEverythingConfig;
+import com.github.soyanga.everything.core.common.History;
 import com.github.soyanga.everything.core.dao.DataSourceFactory;
 import com.github.soyanga.everything.core.dao.FileIndexDao;
 import com.github.soyanga.everything.core.dao.impl.FileIndexDaoImpl;
@@ -50,6 +51,13 @@ public class IntelligentEverythingManager {
     private Thread backgroundClearThread;
     private AtomicBoolean backgroundClearThreadStatus = new AtomicBoolean(false);
 
+    /**
+     * history记录功能
+     */
+    private History history;
+    private Thread historyStoreThread;
+    private AtomicBoolean historyStoreThreadStatus = new AtomicBoolean(false);
+
     private IntelligentEverythingManager() {
         this.initComponent();
     }
@@ -71,10 +79,19 @@ public class IntelligentEverythingManager {
         this.fileSearch = new FileSearchImpl(fileIndexDao);
         //测试使用
 //        this.fileSacn.interceptor(new FilePrintInterceptor());
+        //执行数据处理的操作
         this.fileSacn.interceptor(new FileIndexInterceptor(fileIndexDao));
+
+        //清理线程设置-守护线程
+        thingClearInterceptor = new ThingClearInterceptor(fileIndexDao);
         this.backgroundClearThread = new Thread(this.thingClearInterceptor);
         this.backgroundClearThread.setName("Thread-Thing-Clear");
         this.backgroundClearThread.setDaemon(true);
+        //记录历史线程-守护线程
+        history = new History();
+        this.historyStoreThread = new Thread(this.history);
+        this.historyStoreThread.setName("Thread-Thing-History");
+        this.historyStoreThread.setDaemon(true);
     }
 
 
@@ -167,11 +184,45 @@ public class IntelligentEverythingManager {
     }
 
     /**
+     * 存储用户输入history to queue
+     *
+     * @param string 用户输入history
+     */
+    public void historySoreQueue(String string) {
+        history.storeHistoryQueue(string);
+    }
+
+    /**
+     * 用户返回一个history List
+     *
+     * @return historyList
+     */
+    public List<String> printHistory() {
+        return history.getHistory();
+    }
+
+    public void writeFileToHistory() {
+        history.cleanHistoryFile();
+        history.writeHistorytoFile();
+    }
+
+    /**
      * 启动清理线程：利用一个（原子）标志位+原子CAS操作进行
      */
     public void startBackgroundClearThread() {
         if (this.backgroundClearThreadStatus.compareAndSet(false, true)) {
             this.backgroundClearThread.start();
+        } else {
+            System.out.println("Can not restart BackgroundClearThread ");
+        }
+    }
+
+    /**
+     * 启动记录history用户输入线程
+     */
+    public void startHistoryStoreThread() {
+        if (this.historyStoreThreadStatus.compareAndSet(false, true)) {
+            this.historyStoreThread.start();
         } else {
             System.out.println("Can not restart BackgroundClearThread ");
         }

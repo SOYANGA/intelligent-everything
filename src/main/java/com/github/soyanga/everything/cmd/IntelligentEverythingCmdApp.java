@@ -33,6 +33,9 @@ public class IntelligentEverythingCmdApp {
         //启用后台清理线程
         manager.startBackgroundClearThread();
 
+        //启动后台记录history线程
+        manager.startHistoryStoreThread();
+
         //3.交互式
         interactive(manager);
         //2.执行交互，实现help命令，添加最外层循环直到输入quit才正式，退出并打印一句话
@@ -44,6 +47,8 @@ public class IntelligentEverythingCmdApp {
         while (true) {
             System.out.print("everything >>");
             String input = scanner.nextLine();
+            //存储用户输入history
+            startStoreHistory(manager, input);
             //优先处理search
             if (input.startsWith("search")) {
                 //search name [file_type]
@@ -83,11 +88,30 @@ public class IntelligentEverythingCmdApp {
                     }
                     break;
                 case "quit":
+                    writeHistory(manager);
                     quit();
+                    break;
+                case "history":
+                    history(manager);
                     break;
                 default:
                     help();
             }
+        }
+    }
+
+    private static void writeHistory(IntelligentEverythingManager manager) {
+        manager.writeFileToHistory();
+    }
+
+    private static void startStoreHistory(IntelligentEverythingManager manager, String input) {
+            manager.historySoreQueue(input);
+    }
+
+    private static void history(IntelligentEverythingManager manager) {
+        List<String> list = manager.printHistory();
+        for (String history : list) {
+            System.out.println(history);
         }
     }
 
@@ -165,7 +189,6 @@ public class IntelligentEverythingCmdApp {
             }
         }
     }
-
 
     private static void welcome() {
         System.out.println("welcome to use,IntelligentEverything");
