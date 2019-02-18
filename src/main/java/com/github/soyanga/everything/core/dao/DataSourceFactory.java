@@ -2,12 +2,15 @@ package com.github.soyanga.everything.core.dao;
 
 import com.alibaba.druid.pool.DruidDataSource;
 import com.github.soyanga.everything.config.IntelligentEverythingConfig;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 
 import javax.sql.DataSource;
 import java.io.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.function.Predicate;
 
 /**
  * @program: intelligent-everything
@@ -135,5 +138,35 @@ public class DataSourceFactory {
 //               线程私有内存区域不会涉及多线程安全性问题，采用StringBuffer反而会让性能降低
 //
 
+        //IO第三方工具使用
+//    public static void main(String[] args) {
+//        //显示IO包的读文件
+//
+//        try (InputStream in = DataSourceFactory.class.getClassLoader().getResourceAsStream("intelligent_everything.sql");) {
+//            //获得直接获得文件中的sql
+////            String sql = IOUtils.toString(in);
+////            System.out.println(sql);
+//            IOUtils.readLines(in)
+//                    .stream()
+//                    .filter(new Predicate<String>() {
+//                        /**
+//                         *
+//                         * @param line
+//                         * @return 返回false：是要排除的内容
+//                         */
+//                        @Override
+//                        public boolean test(String line) {
+//                            return !line.startsWith("--");
+//                        }
+//                    })
+//                    .forEach(line -> System.out.println(line));
+//
+//                //文件拷贝
+////            FileUtils.copyFileToDirectory();
+//
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
 }

@@ -1,6 +1,7 @@
 package com.github.soyanga.everything.core;
 
 import com.github.soyanga.everything.config.IntelligentEverythingConfig;
+import com.github.soyanga.everything.core.common.HanderPath;
 import com.github.soyanga.everything.core.common.History;
 import com.github.soyanga.everything.core.dao.DataSourceFactory;
 import com.github.soyanga.everything.core.dao.FileIndexDao;
@@ -11,6 +12,8 @@ import com.github.soyanga.everything.core.interceptor.impl.FileIndexInterceptor;
 import com.github.soyanga.everything.core.interceptor.impl.ThingClearInterceptor;
 import com.github.soyanga.everything.core.model.Condition;
 import com.github.soyanga.everything.core.model.Thing;
+import com.github.soyanga.everything.core.monitor.FileWatch;
+import com.github.soyanga.everything.core.monitor.impl.FileWatchImpl;
 import com.github.soyanga.everything.core.search.FileSearch;
 import com.github.soyanga.everything.core.search.impl.FileSearchImpl;
 
@@ -40,7 +43,7 @@ public class IntelligentEverythingManager {
     private FileSacn fileSacn;
 
     /**
-     * 线程池
+     * 线程池：供构建索引使用
      */
     private ExecutorService executorService;
 
@@ -57,6 +60,12 @@ public class IntelligentEverythingManager {
     private History history;
     private Thread historyStoreThread;
     private AtomicBoolean historyStoreThreadStatus = new AtomicBoolean(false);
+
+    /**
+     * 文件监控
+     */
+    private FileWatch fileWatch;
+
 
     private IntelligentEverythingManager() {
         this.initComponent();
@@ -92,6 +101,11 @@ public class IntelligentEverythingManager {
         this.historyStoreThread = new Thread(this.history);
         this.historyStoreThread.setName("Thread-Thing-History");
         this.historyStoreThread.setDaemon(true);
+
+        /**
+         * 文件监控对象
+         */
+        this.fileWatch = new FileWatchImpl(fileIndexDao);
     }
 
 
@@ -193,7 +207,7 @@ public class IntelligentEverythingManager {
     }
 
     /**
-     * 用户返回一个history List
+     * 用户返回一个history List 共CmdAPP类去调用
      *
      * @return historyList
      */
@@ -201,6 +215,9 @@ public class IntelligentEverythingManager {
         return history.getHistory();
     }
 
+    /**
+     * 执行完指令最后的写入功能
+     */
     public void writeFileToHistory() {
         history.cleanHistoryFile();
         history.writeHistorytoFile();
@@ -217,6 +234,7 @@ public class IntelligentEverythingManager {
         }
     }
 
+
     /**
      * 启动记录history用户输入线程
      */
@@ -226,5 +244,23 @@ public class IntelligentEverythingManager {
         } else {
             System.out.println("Can not restart BackgroundClearThread ");
         }
+    }
+
+    /**
+     * 启动文件系统监听
+     */
+    public void startFileSystemMonitor() {
+        IntelligentEverythingConfig config = IntelligentEverythingConfig.getInstance();
+        HanderPath handerPath = new HanderPath();
+        handerPath.setIncludePath(config.getIncludePath());
+        handerPath.setExcludePath(config.getExcludepath());
+        this.fileWatch.monitor(handerPath);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                System.out.println("文件系统监控启动");
+                fileWatch.start();
+            }
+        }).start();
     }
 }

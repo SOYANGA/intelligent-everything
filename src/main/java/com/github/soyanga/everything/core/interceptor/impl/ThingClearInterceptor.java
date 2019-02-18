@@ -48,6 +48,5 @@ public class ThingClearInterceptor implements ThingInterceptor, Runnable {
                 e.printStackTrace();
             }
         }
-
     }
 }

@@ -4,7 +4,6 @@ import com.github.soyanga.everything.config.IntelligentEverythingConfig;
 import com.github.soyanga.everything.core.IntelligentEverythingManager;
 import com.github.soyanga.everything.core.model.Condition;
 import com.github.soyanga.everything.core.model.Thing;
-import lombok.ToString;
 
 import java.util.List;
 import java.util.Scanner;
@@ -22,13 +21,19 @@ public class IntelligentEverythingCmdApp {
 
     public static void main(String[] args) {
         System.out.println("这是intelligentEverything应用程序的命令行交互程序");
+
         //通过用户参数进行解析
         parseParams(args);
         System.out.println(IntelligentEverythingConfig.getInstance());
-        //1.欢迎
+
+        //欢迎
         welcome();
-        //2.创建统一调度器
+
+        //创建统一调度器
         IntelligentEverythingManager manager = IntelligentEverythingManager.getInstance();
+
+        //启动文件监控线程
+        manager.startFileSystemMonitor();
 
         //启用后台清理线程
         manager.startBackgroundClearThread();
@@ -45,6 +50,11 @@ public class IntelligentEverythingCmdApp {
     private static void interactive(IntelligentEverythingManager manager) {
         //2.执行交互，实现help命令，添加最外层循环直到输入quit才正式，退出并打印一句话
         while (true) {
+            try {
+                Thread.sleep(70);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             System.out.print("everything >>");
             String input = scanner.nextLine();
             //存储用户输入history
@@ -81,11 +91,6 @@ public class IntelligentEverythingCmdApp {
                     break;
                 case "index":
                     index(manager);
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
                     break;
                 case "quit":
                     writeHistory(manager);
@@ -100,14 +105,31 @@ public class IntelligentEverythingCmdApp {
         }
     }
 
+
+    /**
+     * 在程序退出时将清理缓存文件，并将内存中的history写入到文件中
+     *
+     * @param manager
+     */
     private static void writeHistory(IntelligentEverythingManager manager) {
         manager.writeFileToHistory();
     }
 
+    /**
+     * 将用户输入存入history中，并在首次写入时将history缓存文件中数据读取到内存中
+     *
+     * @param manager
+     * @param input
+     */
     private static void startStoreHistory(IntelligentEverythingManager manager, String input) {
-            manager.historySoreQueue(input);
+        manager.historySoreQueue(input);
     }
 
+    /**
+     * 打印history历史
+     *
+     * @param manager
+     */
     private static void history(IntelligentEverythingManager manager) {
         List<String> list = manager.printHistory();
         for (String history : list) {
@@ -199,6 +221,7 @@ public class IntelligentEverythingCmdApp {
         System.out.println("退出: quit");
         System.out.println("帮助: help");
         System.out.println("索引: index");
+        System.out.println("历史指令: history");
         System.out.println("搜索: search <name> [<file-Type> img | doc | bin | archieve | other]");
     }
 
