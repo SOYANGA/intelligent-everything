@@ -26,7 +26,7 @@ public class FileWatchImpl implements FileWatch, org.apache.commons.io.monitor.F
 
     public FileWatchImpl(FileIndexDao fileIndexDao) {
         this.fileIndexDao = fileIndexDao;
-        this.monitor = new FileAlterationMonitor(10);
+        this.monitor = new FileAlterationMonitor(500);
     }
 
     /**
@@ -143,6 +143,5 @@ public class FileWatchImpl implements FileWatch, org.apache.commons.io.monitor.F
         System.out.println("FileDelete:" + file);
         this.fileIndexDao.delete(FileConvertThing.convert(file));
     }
-
 
 }

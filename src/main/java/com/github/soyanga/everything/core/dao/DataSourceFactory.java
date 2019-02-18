@@ -2,15 +2,12 @@ package com.github.soyanga.everything.core.dao;
 
 import com.alibaba.druid.pool.DruidDataSource;
 import com.github.soyanga.everything.config.IntelligentEverythingConfig;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 
 import javax.sql.DataSource;
 import java.io.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.function.Predicate;
 
 /**
  * @program: intelligent-everything
@@ -59,13 +56,15 @@ public class DataSourceFactory {
                     //jdbc规范中H2 jdbc:h2://ip:port/databaseName  ->存储到H2服务器
                     dataSource.setUrl("jdbc:h2:" + IntelligentEverythingConfig.getInstance().getH2IndexPath());
 
+//                    dataSource.setUrl("jdbc:h2:file:" + IntelligentEverythingConfig.getInstance().getH2IndexPath() + "AUTO_SERVER=TRUE;");
+
                     //Duirp数据库的连接池的可配置参数
 
                     //判断连接数据库受否开启超时断开连接
                     //第二种
-//                    dataSource.setTestWhileIdle(false);
+                    dataSource.setTestWhileIdle(false);
                     //第一种
-                    dataSource.setValidationQuery("select now()");
+//                    dataSource.setValidationQuery("select now()");
                 }
             }
         }
@@ -138,7 +137,7 @@ public class DataSourceFactory {
 //               线程私有内存区域不会涉及多线程安全性问题，采用StringBuffer反而会让性能降低
 //
 
-        //IO第三方工具使用
+    //IO第三方工具使用
 //    public static void main(String[] args) {
 //        //显示IO包的读文件
 //

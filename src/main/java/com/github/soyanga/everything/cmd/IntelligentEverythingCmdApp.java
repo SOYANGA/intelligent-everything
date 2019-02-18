@@ -36,7 +36,7 @@ public class IntelligentEverythingCmdApp {
         manager.startFileSystemMonitor();
 
         //启用后台清理线程
-        manager.startBackgroundClearThread();
+//        manager.startBackgroundClearThread();
 
         //启动后台记录history线程
         manager.startHistoryStoreThread();
@@ -61,7 +61,7 @@ public class IntelligentEverythingCmdApp {
             startStoreHistory(manager, input);
             //优先处理search
             if (input.startsWith("search")) {
-                //search name [file_type]
+                //search name [file_type]  search [“java 课件”] DOC
                 String[] values = input.split(" ");
                 if (values.length >= 2) {
                     if (!"search".equals(values[0])) {
@@ -70,6 +70,35 @@ public class IntelligentEverythingCmdApp {
                     }
                     //将用户输入的正确指令 提取变成Condition条件
                     Condition condition = new Condition();
+                    //判断文件夹中是否有空格
+                    if (values[1].startsWith("\"")) {
+                        int index = 0;
+                        for (String str : values) {
+                            if (str.endsWith("\"")) {
+                                break;
+                            }
+                            index++;
+                        }
+                        if (index > 1) {
+                            StringBuilder fileNameSb = new StringBuilder();
+                            values[1] = values[1].split("\"")[1];
+                            values[index] = values[index].split("\"")[0];
+                            for (int i = 1; i <= index; i++) {
+                                fileNameSb.append(values[i] + " ");
+                            }
+                            String fileNmae = fileNameSb.toString().trim();
+                            condition.setName(fileNmae);
+
+                            if (values.length > index + 1) {
+                                String fileType = values[index + 1];
+                                condition.setFileType(fileType);
+                            }
+                            //limit orderBy 配置类
+                            search(manager, condition);
+                            continue;
+                        }
+
+                    }
                     String name = values[1];
                     condition.setName(name);
                     if (values.length >= 3) {
