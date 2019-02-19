@@ -56,7 +56,7 @@ public class DataSourceFactory {
                     //jdbc规范中H2 jdbc:h2://ip:port/databaseName  ->存储到H2服务器
                     dataSource.setUrl("jdbc:h2:" + IntelligentEverythingConfig.getInstance().getH2IndexPath());
 
-//                    dataSource.setUrl("jdbc:h2:file:" + IntelligentEverythingConfig.getInstance().getH2IndexPath() + "AUTO_SERVER=TRUE;");
+//                    dataSource.setUrl("jdbc:h2:file:" + IntelligentEverythingConfig.getInstance().getH2IndexPath() + ";AUTO_SERVER=TRUE;");
 
                     //Duirp数据库的连接池的可配置参数
 

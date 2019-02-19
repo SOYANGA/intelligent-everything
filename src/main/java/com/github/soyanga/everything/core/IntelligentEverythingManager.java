@@ -263,4 +263,8 @@ public class IntelligentEverythingManager {
             }
         }).start();
     }
+
+    public void stopFileSystemMonitor() {
+        this.fileWatch.stop();
+    }
 }

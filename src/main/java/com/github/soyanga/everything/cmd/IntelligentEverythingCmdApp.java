@@ -36,7 +36,7 @@ public class IntelligentEverythingCmdApp {
         manager.startFileSystemMonitor();
 
         //启用后台清理线程
-//        manager.startBackgroundClearThread();
+        manager.startBackgroundClearThread();
 
         //启动后台记录history线程
         manager.startHistoryStoreThread();
@@ -123,6 +123,7 @@ public class IntelligentEverythingCmdApp {
                     break;
                 case "quit":
                     writeHistory(manager);
+                    stopWatch(manager);
                     quit();
                     break;
                 case "history":
@@ -252,11 +253,16 @@ public class IntelligentEverythingCmdApp {
         System.out.println("索引: index");
         System.out.println("历史指令: history");
         System.out.println("搜索: search <name> [<file-Type> img | doc | bin | archieve | other]");
+        System.out.println("搜索文件特殊格式: search <\"name contain spacing \"> [<file-Type> img | doc | bin | archieve | other]");
     }
 
     private static void quit() {
         System.out.println("再见");
         System.exit(0);
+    }
+
+    private static void stopWatch(IntelligentEverythingManager manager) {
+        manager.stopFileSystemMonitor();
     }
 
 

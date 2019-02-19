@@ -7,10 +7,7 @@ import com.github.soyanga.everything.core.dao.DataSourceFactory;
 import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Queue;
-import java.util.Scanner;
+import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
 
 /**
@@ -36,18 +33,12 @@ public class History implements Runnable {
             if (queue.size() >= showNumber) {
                 String history = queue.poll();
                 try {
-                    URI url = History.class.getClassLoader().getResource("historyFile.txt").toURI();
+                    URI url = Objects.requireNonNull(History.class.getClassLoader().getResource("historyFile.txt")).toURI();
                     FileWriter fileWriter = new FileWriter(url.getPath(), true);
                     fileWriter.write(history + "\n");
                     fileWriter.flush();
-                } catch (URISyntaxException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                try {
                     Thread.sleep(100);
-                } catch (InterruptedException e) {
+                } catch (URISyntaxException | IOException | InterruptedException e) {
                     e.printStackTrace();
                 }
             }
@@ -94,33 +85,29 @@ public class History implements Runnable {
         while (!queue.isEmpty()) {
             String history = queue.poll();
             try {
-                URI url = History.class.getClassLoader().getResource("historyFile.txt").toURI();
+                URI url = Objects.requireNonNull(History.class.getClassLoader().getResource("historyFile.txt")).toURI();
                 File file = new File(url);
                 FileWriter fileWriter = new FileWriter(file, true);
                 fileWriter.write(history + "\n");
                 fileWriter.flush();
-            } catch (URISyntaxException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
+            } catch (URISyntaxException | IOException e) {
                 e.printStackTrace();
             }
         }
     }
 
     public void cleanHistoryFile() {
-            try {
-                URI url = History.class.getClassLoader().getResource("historyFile.txt").toURI();
-                File file = new File(url);
-                FileWriter fileWriter = new FileWriter(file);
-                fileWriter.write("");
-                fileWriter.flush();
-            } catch (URISyntaxException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        try {
+            URI url = Objects.requireNonNull(History.class.getClassLoader().getResource("historyFile.txt")).toURI();
+            File file = new File(url);
+            FileWriter fileWriter = new FileWriter(file);
+            fileWriter.write("");
+            fileWriter.flush();
+        } catch (URISyntaxException | IOException e) {
+            e.printStackTrace();
         }
     }
+}
 
 //    public static void main(String[] args) {
 //        String history = "hahah";

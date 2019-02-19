@@ -123,7 +123,7 @@
                             <addClasspath>true</addClasspath>
                             <!--设置可执行jar的主类-->
                             <mainClass>com.github.soyanga.everything.cmd.IntelligentEverythingCmdApp</mainClass>
-                            <addExtensions>true</addExtensions>
+                            <!--<addExtensions>true</addExtensions>-->
                             <!--指定可执行jar依赖包归档的目录前缀-->
                             <classpathPrefix>lib</classpathPrefix>
                         </manifest>

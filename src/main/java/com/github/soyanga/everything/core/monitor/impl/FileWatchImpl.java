@@ -26,7 +26,7 @@ public class FileWatchImpl implements FileWatch, org.apache.commons.io.monitor.F
 
     public FileWatchImpl(FileIndexDao fileIndexDao) {
         this.fileIndexDao = fileIndexDao;
-        this.monitor = new FileAlterationMonitor(500);
+        this.monitor = new FileAlterationMonitor(1000);
     }
 
     /**
