@@ -38,6 +38,8 @@ public class IntelligentEverythingCmdApp {
             System.out.println(IntelligentEverythingConfig.getInstance());
         }
 
+
+
         //创建统一调度器
         IntelligentEverythingManager manager = IntelligentEverythingManager.getInstance();
 
