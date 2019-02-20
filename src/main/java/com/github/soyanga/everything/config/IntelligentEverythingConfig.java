@@ -1,10 +1,8 @@
 package com.github.soyanga.everything.config;
 
 
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 import java.io.File;
 import java.nio.file.FileSystem;
@@ -21,25 +19,49 @@ import java.util.Set;
  * @Version 1.0
  */
 @Getter
-@ToString
 public class IntelligentEverythingConfig {
 
 
     private static volatile IntelligentEverythingConfig config;
 
     /**
-     * 建立索引路劲
+     * 建立索引路径
      */
+    @Setter
     private Set<String> includePath = new HashSet<>();
 
 
     /**
      * 排除索引路径
      */
+    @Setter
     private Set<String> excludepath = new HashSet<>();
 
 
     //TODO 可配置的参数会在这里体现
+
+
+    /**
+     * 在交互中命令行设置参数flag = true;
+     * 在程序运行前设置参数flag = false;
+     */
+    @Setter
+    private Boolean alterConfigflag = true;
+
+
+    /**
+     * 文件系统监控开关 ture->开   false->关
+     */
+    @Setter
+    private Boolean fileSystemMonitorSwitch = false;
+
+
+    /**
+     * 后台清理开关 ture->开   false->关 后处理search时才进行后台处理
+     */
+    @Setter
+    private Boolean backgroundClearThreadSwitch = true;
+
     /**
      * 检索最大的返回值
      */
@@ -54,10 +76,40 @@ public class IntelligentEverythingConfig {
     private Boolean depthOrderAsc = true;
 
     /**
+     * 检查数据库索引目录是否变更
+     * 变更则就重新索引
+     */
+    @Setter
+    private Boolean alterIndexPathFlag = false;
+
+    /**
+     * 是否初次配置程序
+     */
+    @Setter
+    private Boolean isFirstUse = true;
+
+
+    /**
+     * 是否开始导入配置文件
+     */
+    @Setter
+    private Boolean isStartLoad = true;
+
+    /**
      * H2数据库文件路径
      */
     private String h2IndexPath = System.getProperty("user.dir") + File.separator + "intelligent_everything";
 
+    /**
+     * history缓存文件路径
+     */
+    private String historyPath = System.getProperty("user.dir") + File.separator + "historyFile.txt";
+
+
+    /**
+     * 配置文件，其中存储程序配置可更改的所有信息
+     */
+    private String proFile = System.getProperty("user.dir") + File.separator + "proFile.txt";
 
     private IntelligentEverythingConfig() {
 
@@ -106,22 +158,16 @@ public class IntelligentEverythingConfig {
         }
     }
 
-//
-//    public static void main(String[] args) {
-////        FileSystem fileSystem = FileSystems.getDefault();
-////        Iterable<Path> iterator = fileSystem.getRootDirectories();
-////        iterator.forEach(new Consumer<Path>() {
-////            @Override
-////            public void accept(Path path) {
-////                System.out.println(path);
-////            }
-////        });
-////        System.out.println(System.getProperty("os.name"));
-//        IntelligentEverythingConfig config = IntelligentEverythingConfig.getInstance();
-//        System.out.println(config.getIncludePath());
-//        System.out.println(config.getExcludepath());
-////        System.out.println(config);
-//    }
 
-
+    @Override
+    public String toString() {
+        return "  IntelligentEverythingConfig:\n"
+                + "  isFirstUse=" + isFirstUse + "\n"
+                + "  includePath=" + includePath + "\n"
+                + "  excludepath=" + excludepath + "\n"
+                + "  maxReturn=" + maxReturn + "\n"
+                + "  depthOrderAsc=" + depthOrderAsc + "\n"
+                + "  fileSystemMonitorSwitch=" + fileSystemMonitorSwitch + "\n"
+                + "  backgroundClearThreadSwitch=" + backgroundClearThreadSwitch + "\n";
+    }
 }

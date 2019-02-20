@@ -13,4 +13,6 @@ create table if not exists file_index
   depth     int           not null comment '文件路径深度',
   file_type varchar(32)   not null comment '文件类型'
 );
---scott数据库 用户名 密码
+create index file_name on file_index(name);
+-- 建立索引
+-- scott数据库 用户名 密码

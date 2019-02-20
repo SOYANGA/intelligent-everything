@@ -1,0 +1,7 @@
+--isFirstUse=false;
+--includePath=D:\婕\Everything;
+--excludePath=C:\Program Files;C:\ProgramData;C:\windows;C:\Program Files (x86);
+--depthOrderByAsctrue;
+--maxReturn=30;
+--fileSystemMonitorfalse;
+--backgroundClear=true;

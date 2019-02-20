@@ -78,8 +78,8 @@ public class IntelligentEverythingManager {
         //准备输数据源对象
         DataSource dataSource = DataSourceFactory.dataSource();
 
-        //初始化并重新索引数据库
-        initOrResetDatabase();
+        //检查数据库是否已经存在
+        checkDatabase();
 
         //数据库层得准备工作
         FileIndexDao fileIndexDao = new FileIndexDaoImpl(dataSource);
@@ -108,6 +108,20 @@ public class IntelligentEverythingManager {
         this.fileWatch = new FileWatchImpl(fileIndexDao);
     }
 
+    private void checkDatabase() {
+        String fileName = IntelligentEverythingConfig.getInstance().getH2IndexPath() + ".mv.db";
+//        System.out.println(fileName);
+        File dbFile = new File(fileName);
+        //初始化数据库
+        if (dbFile.exists() && dbFile.isDirectory()) {
+            throw new RuntimeException("The following path has the same folder as the database name, database creation failed!!\n"
+                    + IntelligentEverythingConfig.getInstance().getH2IndexPath() + ".mv.db\n"
+                    + "Please delete this folder and restart the program!");
+        } else if (!dbFile.exists()) {
+            DataSourceFactory.initDataSource();
+        }
+    }
+
 
     private void initOrResetDatabase() {
         DataSourceFactory.initDataSource();
@@ -122,7 +136,6 @@ public class IntelligentEverythingManager {
             synchronized (IntelligentEverythingManager.class) {
                 if (manager == null) {
                     manager = new IntelligentEverythingManager();
-                    manager.initComponent();
                 }
             }
         }
@@ -197,6 +210,7 @@ public class IntelligentEverythingManager {
         System.out.println("Build index complete!");
     }
 
+
     /**
      * 存储用户输入history to queue
      *
@@ -214,6 +228,9 @@ public class IntelligentEverythingManager {
     public List<String> printHistory() {
         return history.getHistory();
     }
+
+
+
 
     /**
      * 执行完指令最后的写入功能

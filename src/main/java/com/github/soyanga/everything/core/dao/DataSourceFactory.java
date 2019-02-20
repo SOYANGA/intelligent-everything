@@ -64,7 +64,7 @@ public class DataSourceFactory {
                     //第二种
                     dataSource.setTestWhileIdle(false);
                     //第一种
-//                    dataSource.setValidationQuery("select now()");
+                    dataSource.setValidationQuery("select now()");
                 }
             }
         }

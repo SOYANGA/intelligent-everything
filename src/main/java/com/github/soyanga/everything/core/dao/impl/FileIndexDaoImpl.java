@@ -101,8 +101,9 @@ public class FileIndexDaoImpl implements FileIndexDao {
             StringBuilder sqlBuilder = new StringBuilder();
             sqlBuilder.append(" select name,path,depth,file_type from file_index ");
             //name匹配原则：前模糊，后模糊，前后模糊原则需要的即可
+            //后模糊才可以使用所数据库的索引
             sqlBuilder.append(" where ")
-                    .append(" name like '%")
+                    .append(" name like '")
                     .append(condition.getName())
                     .append("%' ");
             //fileType: =直接匹配
