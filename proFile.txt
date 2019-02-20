@@ -1,7 +1,7 @@
 --isFirstUse=false;
---includePath=D:\婕\Everything;
+--includePath=D:\qq数据;
 --excludePath=C:\Program Files;C:\ProgramData;C:\windows;C:\Program Files (x86);
---depthOrderByAsctrue;
+--depthOrderByAsc=true;
 --maxReturn=30;
---fileSystemMonitorfalse;
+--fileSystemMonitor=true;
 --backgroundClear=true;

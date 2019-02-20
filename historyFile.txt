@@ -1,10 +1,10 @@
+r
+reinstall
+show
+r
+reinstall
+search qq
+r
+reinstall
 
-search 0
-quit
-search 0
-search J
-search J
-search Jvaa k
-search "da sdsa sd" doc
-history
 quit

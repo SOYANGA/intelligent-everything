@@ -57,10 +57,25 @@ public class IntelligentEverythingConfig {
 
 
     /**
+     * 判断文件监控系统是否重复开启 true->重复开启，false->没有重复重复开启
+     */
+    @Setter
+    private Boolean fileSystemIsRepeat = false;
+
+
+    /**
      * 后台清理开关 ture->开   false->关 后处理search时才进行后台处理
      */
     @Setter
     private Boolean backgroundClearThreadSwitch = true;
+
+
+    /**
+     * 判断 后台清理是否重复开启 true->重复开启，false->没有重复重复开启
+     */
+    @Setter
+    private Boolean backgroundClearThreadIsRepeat = false;
+
 
     /**
      * 检索最大的返回值
@@ -94,6 +109,13 @@ public class IntelligentEverythingConfig {
      */
     @Setter
     private Boolean isStartLoad = true;
+
+    /**
+     * 初始化标志为默认为false->不出初始化
+     */
+    @Setter
+    private Boolean ISinitialize = false;
+
 
     /**
      * H2数据库文件路径

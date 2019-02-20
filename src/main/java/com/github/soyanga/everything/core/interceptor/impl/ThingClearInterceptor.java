@@ -35,6 +35,7 @@ public class ThingClearInterceptor implements ThingInterceptor, Runnable {
      */
     @Override
     public void run() {
+        System.out.println("后台清理线程开启");
         while (true) {
             Thing thing = this.queue.poll();
             if (thing != null) {

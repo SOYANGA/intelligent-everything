@@ -6,8 +6,10 @@ import com.github.soyanga.everything.core.common.ProFile;
 import com.github.soyanga.everything.core.model.Condition;
 import com.github.soyanga.everything.core.model.Thing;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Scanner;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @program: intelligent-everything
@@ -23,7 +25,6 @@ public class IntelligentEverythingCmdApp {
 
     public static void main(String[] args) {
         loadConfig();
-        System.out.println("这是intelligentEverything应用程序的命令行交互程序");
         //欢迎
         welcome();
         //配置参数
@@ -39,7 +40,6 @@ public class IntelligentEverythingCmdApp {
         }
 
 
-
         //创建统一调度器
         IntelligentEverythingManager manager = IntelligentEverythingManager.getInstance();
 
@@ -52,7 +52,6 @@ public class IntelligentEverythingCmdApp {
         //启用后台清理线程
         if (config.getBackgroundClearThreadSwitch()) {
             manager.startBackgroundClearThread();
-
         }
 
         //启动后台记录history线程
@@ -145,11 +144,34 @@ public class IntelligentEverythingCmdApp {
 
     private static void interactive(IntelligentEverythingManager manager) {
         //2.执行交互，实现help命令，添加最外层循环直到输入quit才正式，退出并打印一句话
-        if (config.getAlterIndexPathFlag()) {
-            index(manager);
-            config.setAlterIndexPathFlag(false);
-        }
+
+        //放到字符串处理去，ture且getFileSystemflg为false时开启
+        //启动文件监控线程
+//        if (config.getFileSystemMonitorSwitch()) {
+//            manager.startFileSystemMonitor();
+//        }
+//
+//        //启用后台清理线程
+//        if (config.getBackgroundClearThreadSwitch()) {
+//            manager.startBackgroundClearThread();
+//        }
+
         while (true) {
+            //判断修改重新加载索引
+            if (config.getAlterIndexPathFlag()) {
+                index(manager);
+                config.setAlterIndexPathFlag(false);
+            }
+            if (config.getFileSystemMonitorSwitch() && !config.getFileSystemIsRepeat()) {
+                manager.startFileSystemMonitor();
+                //开启文件监控系统后，将重复开启标志，设置为 true防止重复开启
+                config.setFileSystemIsRepeat(true);
+            }
+            if (config.getBackgroundClearThreadSwitch() && !config.getBackgroundClearThreadIsRepeat()) {
+                manager.startBackgroundClearThread();
+                //开启后台清理守护线程后，将重复开启标志，设置为 true防止重复开启
+                config.setBackgroundClearThreadIsRepeat(true);
+            }
             try {
                 Thread.sleep(70);
             } catch (InterruptedException e) {
@@ -176,6 +198,8 @@ public class IntelligentEverythingCmdApp {
                     break;
                 case "quit":
                     writeHistory(manager);
+                    //TODO
+                    //关闭总是阻塞
 //                    stopWatch(manager);
                     WriteProFile();
                     quit();
@@ -186,7 +210,12 @@ public class IntelligentEverythingCmdApp {
                 case "reinstall":
                     if (config.getAlterConfigflag()) {
                         alterParam();
-                        index(manager);
+                        //判断是否有有路径相关配置改变，只有路径配置改变我们重新索引
+                        if (config.getAlterIndexPathFlag()) {
+                            index(manager);
+                            config.setAlterIndexPathFlag(false);
+                        }
+
                     } else {
                         help();
                     }
@@ -197,10 +226,54 @@ public class IntelligentEverythingCmdApp {
                 case "show":
                     showConfig();
                     break;
+                case "initialize":
+                    initialize(manager);
+                    break;
+                case "cls":
+                    clearCmd();
+                    break;
                 default:
                     help();
             }
         }
+    }
+
+    /**
+     * 清空命令行
+     */
+    private static void clearCmd() {
+        //// 新建一个 ProcessBuilder，其要执行的命令是 cmd.exe，参数是 /c 和 cls
+        try {
+            new ProcessBuilder("cmd", "/c", "cls")
+                    // 将 ProcessBuilder 对象的输出管道和 Java 的进程进行关联，这个函数的返回值也是一个
+                    // ProcessBuilder
+                    .inheritIO()
+                    // 开始执行 ProcessBuilder 中的命令
+                    .start()
+                    // 等待 ProcessBuilder 中的清屏命令执行完毕
+                    // 如果不等待则会出现清屏代码后面的输出被清掉的情况
+                    .waitFor(); // 清屏命令
+        } catch (InterruptedException | IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    /**
+     * 程序回到初始化配置，恢复出厂
+     */
+    private static void initialize(IntelligentEverythingManager manager) {
+        WriteProFile();
+        writeHistory(manager);
+        config.setISinitialize(true);
+        System.out.println("即将初始化Intelligent Everything...");
+        try {
+            TimeUnit.MILLISECONDS.sleep(500);
+            System.exit(0);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
     }
 
 
@@ -273,14 +346,14 @@ public class IntelligentEverythingCmdApp {
     }
 
 
-    /**
-     * 用户通过输入修改要检索的路径
-     */
-    private static void alterConfig(String alterPath, IntelligentEverythingManager manager) {
-
-
-        index(manager);
-    }
+//    /**
+//     * 用户通过输入修改要检索的路径
+//     */
+//    private static void alterConfig(String alterPath, IntelligentEverythingManager manager) {
+//
+//
+//        index(manager);
+//    }
 
 
     /**
@@ -381,6 +454,14 @@ public class IntelligentEverythingCmdApp {
         commonParse(paramStr, handindex);
     }
 
+    /**
+     * 配置文件的之前的导入时 不会将AlterIndexPathFlag设置为true,即不会对改变的文件配置做出响应（不会重新建立索引）
+     * 将配置文件进行导入后  判断是否有关于文件路径设置被改变
+     * 只有将有关文件路径的改变，才会重新索引数据库
+     *
+     * @param paramStr  参数
+     * @param handindex 对应第一个参数的"="
+     */
     public static void commonParse(String paramStr, int handindex) {
         if (handindex != -1 && handindex < paramStr.length()) {
             //操作参数
@@ -395,9 +476,6 @@ public class IntelligentEverythingCmdApp {
             if (maxReturnParam.equals(paramHand)) {
                 try {
                     config.setMaxReturn(Integer.parseInt(paramList[0]));
-                    if (!config.getIsStartLoad()) {
-                        config.setAlterIndexPathFlag(true);
-                    }
                     System.out.println("->maxReturn 设置成功");
                 } catch (NullPointerException e) {
                     //用户输入错误就使用默认值
@@ -407,9 +485,6 @@ public class IntelligentEverythingCmdApp {
             String depthOrderAscParam = "--depthOrderByAsc=";
             if (depthOrderAscParam.equals(paramHand)) {
                 config.setDepthOrderAsc(Boolean.parseBoolean(paramList[0]));
-                if (!config.getIsStartLoad()) {
-                    config.setAlterIndexPathFlag(true);
-                }
                 System.out.println("->depthOrderByAsc 设置成功");
             }
 
@@ -444,21 +519,87 @@ public class IntelligentEverythingCmdApp {
                     }
                 }
             }
-            if ("--fileSystemMonitor=true".equals(paramHand + paramList[0])) {
-                config.setFileSystemMonitorSwitch(true);
-                if (!config.getIsStartLoad()) {
-                    config.setAlterIndexPathFlag(true);
+            String FileSystemMonitorParam = "--fileSystemMonitor=";
+            if (FileSystemMonitorParam.equals(paramHand)) {
+                Boolean flag = Boolean.parseBoolean(paramList[0]);
+                if (config.getIsStartLoad()) {
+                    if (flag) {
+                        //如果上次程序配置开启文件监控系统，再次进入导入配置，且将 重复开启标志设置为true,防止重复开启两个线程报异常！
+                        config.setFileSystemIsRepeat(true);
+                    }
+                    config.setFileSystemMonitorSwitch(flag);
+                    System.out.println("->FileSystemMonitor 设置成功");
+                } else {
+                    //之前关闭，开启文件监控
+                    if (!config.getFileSystemMonitorSwitch() && flag.equals(true)) {
+                        config.setFileSystemMonitorSwitch(flag);
+                        System.out.println("文件监控开关开启");
+                        return;
+                    }
+                    //之前开启，就再次不开启了
+                    else if (config.getFileSystemMonitorSwitch() && flag.equals(true)) {
+                        config.setFileSystemIsRepeat(true);
+                        System.out.println("文件监控系统已经开启，无需重复开启");
+                        return;
+                    }
+                    //之前开启，现在关闭了
+                    else if (config.getFileSystemMonitorSwitch() && flag.equals(false)) {
+                        config.setFileSystemMonitorSwitch(flag);
+                        //之前开启先在关闭，必须执行quit退出程序，再次进入程序时就不会开启文件系统监控
+                        // 此时才能让用户继续执行开启状态
+                        //即：执行关闭状态后（其实还处于开启状态），我们必须进行重启程序操作！
+//                        config.setFileSystemIsRepeat(false);
+                        System.out.println("文件系统监控开关关闭，下次进入程序生效！ 请重启程序:)");
+                        return;
+                    }
+                    //之前关闭，现在也关闭，必须重启程序！
+                    else if (!config.getFileSystemMonitorSwitch() && flag.equals(false)) {
+                        System.out.println("文件系统监控开关已经关闭，请重启程序生效！");
+                        return;
+                    }
                 }
-                System.out.println("文件系统监控开启");
             }
-            if ("--backgroundClear=false".equals(paramHand + paramList[0])) {
-                config.setBackgroundClearThreadSwitch(false);
-                if (!config.getIsStartLoad()) {
-                    config.setAlterIndexPathFlag(true);
+            String BackgroundClearThreadSwitchParam = "--backgroundClear=";
+            if (BackgroundClearThreadSwitchParam.equals(paramHand)) {
+                Boolean flag = Boolean.parseBoolean(paramList[0]);
+                if (config.getIsStartLoad()) {
+                    if (flag) {
+                        //如果上次程序配置开启后台清理，再次进入导入配置，且将 重复开启标志设置为true,防止重复开启两个线程报异常！
+                        config.setBackgroundClearThreadIsRepeat(true);
+                    }
+                    config.setBackgroundClearThreadSwitch(flag);
+                    System.out.println("->BackgroundClear 设置成功");
+                } else {
+                    //之前关闭，开启后台清理
+                    if (!config.getBackgroundClearThreadSwitch() && flag.equals(true)) {
+                        config.setBackgroundClearThreadSwitch(flag);
+                        System.out.println("后台清理开关开启");
+                        return;
+                    }
+                    //之前开启，就不再次开启了
+                    else if (config.getBackgroundClearThreadSwitch() && flag.equals(true)) {
+                        config.setBackgroundClearThreadIsRepeat(true);
+                        System.out.println("后台清理已经开启，无需重复开启");
+                        return;
+                    }
+                    //之前开启，现在就"关闭"  ->重启程序生效
+                    else if (config.getBackgroundClearThreadSwitch() && flag.equals(false)) {
+                        //目前关闭在重启程序才生效，我们此时不还出与开启状态，所以我们必须执行重启操作带能让清理线程关闭
+//                        config.getBackgroundClearThreadSwitch(false);
+                        System.out.println("后台清理开关关闭，下次进入程序生效！ 请重启程序:)");
+                        return;
+                    }
+                    //之前关闭，再次关闭。必须重启程序
+                    //之前关闭，现在也关闭
+                    else if (!config.getBackgroundClearThreadSwitch() && flag.equals(false)) {
+                        System.out.println("后台清理开关关闭，请重启程序生效！");
+                        return;
+                    }
                 }
-                System.out.println("后台清理关闭");
             }
-            if (paramHand.contains("--isFirstUse=")) {
+            //首次开启程判断标志
+            String FirstUseParam = "--isFirstUse=";
+            if (paramHand.contains(FirstUseParam)) {
                 config.setIsFirstUse(false);
             }
         }
@@ -466,12 +607,13 @@ public class IntelligentEverythingCmdApp {
 
 
     private static void welcome() {
-        System.out.println("欢迎使用Intelligent_Everything :)\n");
+        System.out.println("欢迎使用Intelligent_Everything 命令行交互程序:)\n");
     }
 
     private static void help() {
         System.out.println("命令列表:");
         System.out.println("退出: quit");
+        System.out.println("清屏: cls");
         System.out.println("帮助: help");
         System.out.println("索引: index");
         System.out.println("历史指令: history");
@@ -482,6 +624,7 @@ public class IntelligentEverythingCmdApp {
         }
         System.out.println("查看当前参数设置: show");
         System.out.println("查看参数设置规则: confighelp");
+        System.out.println("初始化恢复默认设置：initialize");
     }
 
 
@@ -503,10 +646,20 @@ public class IntelligentEverythingCmdApp {
     }
 
     private static void quit() {
+
+        //退出时将可 是否重读开启标志设置为false,可以重复，但是由于再次进入程序时，以下两个参数默认就是false
+//        config.setBackgroundClearThreadIsRepeat(false);
+//        config.setFileSystemIsRepeat(false);
+
         System.out.println("感谢使用 :)");
         System.exit(0);
     }
 
+    /**
+     * 停止监视->监视大文件时会阻塞很长时间
+     *
+     * @param manager
+     */
     private static void stopWatch(IntelligentEverythingManager manager) {
         manager.stopFileSystemMonitor();
     }

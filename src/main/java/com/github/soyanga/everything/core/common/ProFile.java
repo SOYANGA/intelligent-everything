@@ -49,9 +49,11 @@ public class ProFile {
     public static void WriteProFile() {
         try (FileWriter fileWriter = new FileWriter(file, true);
         ) {
-            fileWriter.write("--isFirstUse=false;\n");
-            fileWriter.flush();
-
+            //初始化标志位 默认时false不初始化，则会将”-isFirstUse=false;”写到配置文件中
+            if(!config.getISinitialize()){
+                fileWriter.write("--isFirstUse=false;\n");
+                fileWriter.flush();
+            }
             StringBuilder instr = new StringBuilder();
             for (String inconfig : config.getIncludePath()) {
                 instr.append(inconfig).append(";");
@@ -66,14 +68,14 @@ public class ProFile {
             fileWriter.write("--excludePath=" + exstr.toString() + "\n");
             fileWriter.flush();
 
-            fileWriter.write("--depthOrderByAsc" + config.getDepthOrderAsc().toString() + ";\n");
+            fileWriter.write("--depthOrderByAsc=" + config.getDepthOrderAsc().toString() + ";\n");
             fileWriter.flush();
 
 
             fileWriter.write("--maxReturn=" + config.getMaxReturn().toString() + ";\n");
             fileWriter.flush();
 
-            fileWriter.write("--fileSystemMonitor" + config.getFileSystemMonitorSwitch().toString() + ";\n");
+            fileWriter.write("--fileSystemMonitor=" + config.getFileSystemMonitorSwitch().toString() + ";\n");
             fileWriter.flush();
 
 

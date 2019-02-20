@@ -65,6 +65,8 @@ public class IntelligentEverythingManager {
      * 文件监控
      */
     private FileWatch fileWatch;
+    private Thread fileWatchThread;
+    private AtomicBoolean fileWatchThreadStatus = new AtomicBoolean(false);
 
 
     private IntelligentEverythingManager() {
@@ -106,6 +108,7 @@ public class IntelligentEverythingManager {
          * 文件监控对象
          */
         this.fileWatch = new FileWatchImpl(fileIndexDao);
+        this.fileWatchThread = null;
     }
 
     private void checkDatabase() {
@@ -230,8 +233,6 @@ public class IntelligentEverythingManager {
     }
 
 
-
-
     /**
      * 执行完指令最后的写入功能
      */
@@ -267,18 +268,24 @@ public class IntelligentEverythingManager {
      * 启动文件系统监听
      */
     public void startFileSystemMonitor() {
-        IntelligentEverythingConfig config = IntelligentEverythingConfig.getInstance();
-        HanderPath handerPath = new HanderPath();
-        handerPath.setIncludePath(config.getIncludePath());
-        handerPath.setExcludePath(config.getExcludepath());
-        this.fileWatch.monitor(handerPath);
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                System.out.println("文件系统监控启动");
-                fileWatch.start();
-            }
-        }).start();
+        if (this.fileWatchThreadStatus.compareAndSet(false, true)) {
+            IntelligentEverythingConfig config = IntelligentEverythingConfig.getInstance();
+            HanderPath handerPath = new HanderPath();
+            handerPath.setIncludePath(config.getIncludePath());
+            handerPath.setExcludePath(config.getExcludepath());
+            this.fileWatch.monitor(handerPath);
+            this.fileWatchThread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    System.out.println("文件系统监控启动");
+                    fileWatch.start();
+                }
+            });
+            this.fileWatchThread.setName("Thread-Thing-Watcher");
+            this.fileWatchThread.start();
+        } else {
+            System.out.println("Can not restart fileWatchThread ");
+        }
     }
 
     public void stopFileSystemMonitor() {
