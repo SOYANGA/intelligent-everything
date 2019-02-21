@@ -1,10 +1,10 @@
-r
 reinstall
+d
+h
 show
-r
+d
+initialize
+quit
+d
 reinstall
-search qq
-r
-reinstall
-
 quit

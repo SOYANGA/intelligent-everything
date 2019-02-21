@@ -2,13 +2,14 @@ package com.github.soyanga.everything.core.common;
 
 
 import com.github.soyanga.everything.config.IntelligentEverythingConfig;
+
 import java.io.*;
 import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
 
 /**
  * @program: intelligent-everything
- * @Description:
+ * @Description: 对应history的功能模块
  * @Author: SOYANGA
  * @Create: 2019-02-17 20:44
  * @Version 1.0

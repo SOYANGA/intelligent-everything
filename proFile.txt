@@ -5,3 +5,4 @@
 --maxReturn=30;
 --fileSystemMonitor=true;
 --backgroundClear=true;
+--moniterFrequency=100;

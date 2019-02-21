@@ -64,6 +64,13 @@ public class IntelligentEverythingConfig {
 
 
     /**
+     * 文件监控系统，监控刷新频率
+     */
+    @Setter
+    private Integer moniterFrequency = 1000;
+
+
+    /**
      * 后台清理开关 ture->开   false->关 后处理search时才进行后台处理
      */
     @Setter
@@ -115,7 +122,6 @@ public class IntelligentEverythingConfig {
      */
     @Setter
     private Boolean ISinitialize = false;
-
 
     /**
      * H2数据库文件路径
@@ -190,6 +196,7 @@ public class IntelligentEverythingConfig {
                 + "  maxReturn=" + maxReturn + "\n"
                 + "  depthOrderAsc=" + depthOrderAsc + "\n"
                 + "  fileSystemMonitorSwitch=" + fileSystemMonitorSwitch + "\n"
+                + "  moniterFrequency=" + moniterFrequency + "\n"
                 + "  backgroundClearThreadSwitch=" + backgroundClearThreadSwitch + "\n";
     }
 }

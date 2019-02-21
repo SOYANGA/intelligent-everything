@@ -80,6 +80,7 @@ public class IntelligentEverythingCmdApp {
                 String input = scanner.nextLine();
                 if ("N".equals(input)) {
                     config.setAlterConfigflag(false);
+                    config.setISinitialize(false);
                     return;
                 }
                 //默认开启参数可修改模式就是  true
@@ -106,6 +107,7 @@ public class IntelligentEverythingCmdApp {
         } else {
             System.out.println("->系统监测已经初始化过,配置如下\n");
             showConfig();
+            System.out.println("->您可以输入confighelp查看参数设置规则，请您严格按照规则设置参数。");
             while (true) {
                 System.out.println("是否要变更现有配置？Y/N");
                 String input = scanner.nextLine();
@@ -198,9 +200,10 @@ public class IntelligentEverythingCmdApp {
                     break;
                 case "quit":
                     writeHistory(manager);
-                    //TODO
                     //关闭总是阻塞
-//                    stopWatch(manager);
+                    if (config.getFileSystemMonitorSwitch()) {
+                        stopWatch(manager);
+                    }
                     WriteProFile();
                     quit();
                     break;
@@ -263,9 +266,9 @@ public class IntelligentEverythingCmdApp {
      * 程序回到初始化配置，恢复出厂
      */
     private static void initialize(IntelligentEverythingManager manager) {
+        config.setISinitialize(true);
         WriteProFile();
         writeHistory(manager);
-        config.setISinitialize(true);
         System.out.println("即将初始化Intelligent Everything...");
         try {
             TimeUnit.MILLISECONDS.sleep(500);
@@ -479,6 +482,7 @@ public class IntelligentEverythingCmdApp {
                     System.out.println("->maxReturn 设置成功");
                 } catch (NullPointerException e) {
                     //用户输入错误就使用默认值
+                    System.out.println("moniterFrequency配置参数格式有误");
                 }
             }
 
@@ -598,9 +602,22 @@ public class IntelligentEverythingCmdApp {
                 }
             }
             //首次开启程判断标志
-            String FirstUseParam = "--isFirstUse=";
-            if (paramHand.contains(FirstUseParam)) {
-                config.setIsFirstUse(false);
+            String firstUseParam = "--isFirstUse=";
+            if (firstUseParam.equals(paramHand)) {
+                config.setIsFirstUse(Boolean.parseBoolean(paramList[0]));
+                System.out.println("是否初始化配置完成");
+            }
+            String moniterFrequencyParam = "--moniterFrequency=";
+            if (moniterFrequencyParam.equals(paramHand)) {
+                try {
+                    config.setMoniterFrequency(Integer.parseInt(paramList[0]));
+                    if (!config.getIsStartLoad()) {
+                        System.out.println("文件监控频率设置完毕，开启文件监控系统生效，若文件监控系统已开启则下次运行程序生效！");
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("moniterFrequency配置参数格式有误");
+                }
+
             }
         }
     }
@@ -643,6 +660,7 @@ public class IntelligentEverythingCmdApp {
         System.out.println(" |修改检索结果的排序 ture 为升序,false为降序：    --depthOrderByAsc=[true|false];");
         System.out.println(" |开启或关闭文件监控系统 ture 为开启,false为关闭： --fileSystemMonitor=[true|false];");
         System.out.println(" |开启或关闭后台清理 ture 为升序,false为降序：     --backgroundClear=[true|false];");
+        System.out.println("|文件系统的监控频率默认单位是毫秒，下次启动生效：                             --moniterFrequency=number");
     }
 
     private static void quit() {

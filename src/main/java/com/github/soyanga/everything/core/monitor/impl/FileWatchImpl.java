@@ -1,5 +1,6 @@
-package com.github.soyanga.everything.core.monitor.impl;
+package com.github.soyanga.everything.core.monitor.impl;//package com.github.soyanga.everything.core.monitor.impl;
 
+import com.github.soyanga.everything.config.IntelligentEverythingConfig;
 import com.github.soyanga.everything.core.common.FileConvertThing;
 import com.github.soyanga.everything.core.common.HanderPath;
 import com.github.soyanga.everything.core.dao.FileIndexDao;
@@ -26,7 +27,7 @@ public class FileWatchImpl implements FileWatch, org.apache.commons.io.monitor.F
 
     public FileWatchImpl(FileIndexDao fileIndexDao) {
         this.fileIndexDao = fileIndexDao;
-        this.monitor = new FileAlterationMonitor(1000);
+        this.monitor = new FileAlterationMonitor(IntelligentEverythingConfig.getInstance().getMoniterFrequency());
     }
 
     /**
@@ -145,3 +146,139 @@ public class FileWatchImpl implements FileWatch, org.apache.commons.io.monitor.F
     }
 
 }
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//常林兄的
+//import com.github.soyanga.everything.config.IntelligentEverythingConfig;
+//import com.github.soyanga.everything.core.common.FileConvertThing;
+//import com.github.soyanga.everything.core.common.HanderPath;
+//import com.github.soyanga.everything.core.dao.FileIndexDao;
+//import com.github.soyanga.everything.core.monitor.FileWatch;
+//
+//import org.apache.commons.io.monitor.FileAlterationListener;
+//import org.apache.commons.io.monitor.FileAlterationMonitor;
+//import org.apache.commons.io.monitor.FileAlterationObserver;
+//
+//import java.io.File;
+//import java.io.FileFilter;
+//import java.util.Set;
+//
+//public class FileWatchImpl implements FileAlterationListener, FileWatch {
+//    private FileAlterationMonitor monitor =
+//            new FileAlterationMonitor(IntelligentEverythingConfig.getInstance().getMoniterFrequency());
+//
+//
+//    private FileIndexDao fileIndexDao;
+//
+//    public FileWatchImpl(FileIndexDao fileIndexDao) {
+//        this.fileIndexDao = fileIndexDao;
+//    }
+//
+//    @Override
+//    public void onDirectoryCreate(File file) {
+//        //目录创建
+//        System.out.println("FileCreate:" + file);
+//        this.fileIndexDao.insert(FileConvertThing.convert(file));
+//    }
+//
+//    @Override
+//    public void onDirectoryChange(File file) {
+//        //目录改变
+//        System.out.println("DirectoryChange" + file);
+//    }
+//
+//    @Override
+//    public void onDirectoryDelete(File file) {
+//        //目录删除
+//        System.out.println("DirectoryDelete:" + file);
+//        this.fileIndexDao.delete(FileConvertThing.convert(file));
+//    }
+//
+//    @Override
+//    public void onFileCreate(File file) {
+//        //文件创建
+//        System.out.println("FileCreate:" + file);
+//        this.fileIndexDao.insert(FileConvertThing.convert(file));
+//    }
+//
+//    @Override
+//    public void onFileChange(File file) {
+//        //文件改变
+//        System.out.println("FileChange" + file);
+//    }
+//
+//    @Override
+//    public void onFileDelete(File file) {
+//        //文件删除
+//        System.out.println("FileDelete:" + file);
+//        this.fileIndexDao.delete(FileConvertThing.convert(file));
+//    }
+//
+//    @Override
+//    public void onStart(FileAlterationObserver observer) {
+//        //在通知observer中添加监听器，通知监听开始，让通知器有通知的对象（监听者）
+//        observer.addListener(this);
+//    }
+//
+//    @Override
+//    public void onStop(FileAlterationObserver observer) {
+//        //在通知observer中添加监听器，通知监听结束
+//        observer.removeListener(this);
+//    }
+//
+//    @Override
+//    public void monitor(HanderPath handlePath) {
+//        FileWatchImpl.MyFileFilter s = new MyFileFilter(handlePath);
+//        for (String root : handlePath.getIncludePath()) {
+//            FileAlterationObserver observer = new FileAlterationObserver(root, s);
+//            observer.addListener(this);
+//            this.monitor.addObserver(observer);
+//        }
+//    }
+//
+//
+//    /**
+//     * 监听器的关闭
+//     */
+//    @Override
+//    public void stop() {
+//        try {
+//            this.monitor.stop();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
+//
+//
+//    /**
+//     * 监听器的启动
+//     */
+//    @Override
+//    public void start() {
+//        try {
+//            this.monitor.start();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
+//
+//    class MyFileFilter implements FileFilter {
+//        private final HanderPath handlePath;
+//
+//        MyFileFilter(HanderPath handlePath) {
+//            this.handlePath = handlePath;
+//        }
+//
+//        @Override
+//        public boolean accept(File file) {
+//            Set<String> excludePath = handlePath.getExcludePath();
+//            for (String exclude : excludePath)
+//                if (file.getAbsolutePath().startsWith(exclude)) return false;
+//            return true;
+//        }
+//    }
+//
+//
+//}

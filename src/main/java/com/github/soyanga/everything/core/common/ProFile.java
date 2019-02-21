@@ -5,9 +5,6 @@ import com.github.soyanga.everything.config.IntelligentEverythingConfig;
 
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Scanner;
 
 /**
@@ -50,47 +47,53 @@ public class ProFile {
         try (FileWriter fileWriter = new FileWriter(file, true);
         ) {
             //初始化标志位 默认时false不初始化，则会将”-isFirstUse=false;”写到配置文件中
-            if(!config.getISinitialize()){
+            if (config.getISinitialize()) {
+                fileWriter.write("--isFirstUse=true;\n");
+                fileWriter.flush();
+                return;
+            } else {
                 fileWriter.write("--isFirstUse=false;\n");
                 fileWriter.flush();
+                StringBuilder instr = new StringBuilder();
+                for (String inconfig : config.getIncludePath()) {
+                    instr.append(inconfig).append(";");
+                }
+                fileWriter.write("--includePath=" + instr.toString() + "\n");
+                fileWriter.flush();
+
+                StringBuilder exstr = new StringBuilder();
+                for (String exconfig : config.getExcludepath()) {
+                    exstr.append(exconfig).append(";");
+                }
+                fileWriter.write("--excludePath=" + exstr.toString() + "\n");
+                fileWriter.flush();
+
+                fileWriter.write("--depthOrderByAsc=" + config.getDepthOrderAsc().toString() + ";\n");
+                fileWriter.flush();
+
+
+                fileWriter.write("--maxReturn=" + config.getMaxReturn().toString() + ";\n");
+                fileWriter.flush();
+
+                fileWriter.write("--fileSystemMonitor=" + config.getFileSystemMonitorSwitch().toString() + ";\n");
+                fileWriter.flush();
+
+
+                fileWriter.write("--backgroundClear=" + config.getBackgroundClearThreadSwitch().toString() + ";\n");
+                fileWriter.flush();
+
+                fileWriter.write("--moniterFrequency=" + config.getMoniterFrequency() + ";\n");
+
             }
-            StringBuilder instr = new StringBuilder();
-            for (String inconfig : config.getIncludePath()) {
-                instr.append(inconfig).append(";");
-            }
-            fileWriter.write("--includePath=" + instr.toString() + "\n");
-            fileWriter.flush();
-
-            StringBuilder exstr = new StringBuilder();
-            for (String exconfig : config.getExcludepath()) {
-                exstr.append(exconfig).append(";");
-            }
-            fileWriter.write("--excludePath=" + exstr.toString() + "\n");
-            fileWriter.flush();
-
-            fileWriter.write("--depthOrderByAsc=" + config.getDepthOrderAsc().toString() + ";\n");
-            fileWriter.flush();
-
-
-            fileWriter.write("--maxReturn=" + config.getMaxReturn().toString() + ";\n");
-            fileWriter.flush();
-
-            fileWriter.write("--fileSystemMonitor=" + config.getFileSystemMonitorSwitch().toString() + ";\n");
-            fileWriter.flush();
-
-
-            fileWriter.write("--backgroundClear=" + config.getBackgroundClearThreadSwitch().toString() + ";\n");
-            fileWriter.flush();
-
-
         } catch (IOException e) {
             e.printStackTrace();
         }
+
     }
 
-    public static void flushProFile(){
-        try(FileWriter fileWriter =new FileWriter(file)) {
-             fileWriter.write("");
+    public static void flushProFile() {
+        try (FileWriter fileWriter = new FileWriter(file)) {
+            fileWriter.write("");
         } catch (IOException e) {
             e.printStackTrace();
         }
