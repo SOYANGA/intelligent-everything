@@ -660,7 +660,7 @@ public class IntelligentEverythingCmdApp {
         System.out.println(" |修改检索结果的排序 ture 为升序,false为降序：    --depthOrderByAsc=[true|false];");
         System.out.println(" |开启或关闭文件监控系统 ture 为开启,false为关闭： --fileSystemMonitor=[true|false];");
         System.out.println(" |开启或关闭后台清理 ture 为升序,false为降序：     --backgroundClear=[true|false];");
-        System.out.println("|文件系统的监控频率默认单位是毫秒，下次启动生效：                             --moniterFrequency=number");
+        System.out.println("|文件系统的监控频率默认单位是毫秒，下次启动生效：    --moniterFrequency=number");
     }
 
     private static void quit() {

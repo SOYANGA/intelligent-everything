@@ -3,6 +3,6 @@
 --excludePath=C:\Program Files;C:\ProgramData;C:\windows;C:\Program Files (x86);
 --depthOrderByAsc=true;
 --maxReturn=30;
---fileSystemMonitor=true;
+--fileSystemMonitor=false;
 --backgroundClear=true;
 --moniterFrequency=100;

@@ -40,7 +40,6 @@ public class FileWatchImpl implements FileWatch, org.apache.commons.io.monitor.F
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
 
